@@ -1,0 +1,32 @@
+# Build artifacts
+/build/
+**/build/
+*.bin
+*.elf
+*.map
+*.hex
+
+# SDK config
+sdkconfig
+sdkconfig.*
+
+# Python virtualenv and caches
+/.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Misc
+.cache/
+*.log
+
+# Temporary files
+*.tmp
+*.swp
