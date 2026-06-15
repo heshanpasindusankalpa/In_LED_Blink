@@ -1,6 +1,8 @@
 #ifndef SVC_LED_H
 #define SVC_LED_H
 
+#include "freertos/queue.h"
+
 typedef enum {
 	SVC_LED_OFF = 0,
 	SVC_LED_SINGLE,
@@ -26,5 +28,11 @@ typedef enum {
 void svc_led_handle_button_event(svc_led_button_event_t ev);
 
 svc_led_state_t svc_led_get_state(void);
+
+/* Process one pending button event from the application button queue.
+ * Call from application context (e.g. main loop) to convert ISR-posted
+ * button IDs into resolved button events for the LED service.
+ */
+void led_handler(QueueHandle_t app_queue);
 
 #endif /* SVC_LED_H */

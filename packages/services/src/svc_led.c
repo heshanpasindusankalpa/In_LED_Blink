@@ -4,6 +4,8 @@
 #include "freertos/queue.h"
 #include "led.h"
 #include "svc_led.h"
+#include "svc_button.h"
+#include "btn.h"
 
 /* Blink timing (ms) */
 #define BLINK_ON_MS       120
@@ -146,4 +148,47 @@ void svc_led_start(void)
         s_svc_led_ev_q = xQueueCreate(1, sizeof(svc_led_button_event_t));
     }
     xTaskCreate(svc_led_task, "svc_led", 2048, NULL, tskIDLE_PRIORITY + 1, NULL);
+}
+
+void led_handler(QueueHandle_t app_queue)
+{
+    if (app_queue == NULL) return;
+
+    uint32_t btn_id;
+    /* Drain and process all queued button IDs */
+    while (xQueueReceive(app_queue, &btn_id, 0) == pdPASS) {
+        printf("Button event from ISR: %u\n", (unsigned)btn_id);
+        if (btn_id >= BTN_COUNT) continue;
+
+        /* poll svc_button until it reports a resolved event for this button */
+        for (;;) {
+            button_state_t ev = svc_button_event_read((btn_index_t)btn_id);
+            if (ev == BTN_SHORT_PRESS) {
+                svc_led_state_t st = svc_led_get_state();
+                switch (st) {
+                    case SVC_LED_OFF:
+                        svc_led_set_state(SVC_LED_SINGLE);
+                        break;
+                    case SVC_LED_SINGLE:
+                        svc_led_set_state(SVC_LED_DOUBLE);
+                        break;
+                    case SVC_LED_DOUBLE:
+                        svc_led_set_state(SVC_LED_TRIPLE);
+                        break;
+                    case SVC_LED_TRIPLE:
+                        svc_led_set_state(SVC_LED_SINGLE);
+                        break;
+                    default:
+                        svc_led_set_state(SVC_LED_SINGLE);
+                        break;
+                }
+                break;
+            } else if (ev == BTN_LONG_PRESS) {
+                svc_led_set_state(SVC_LED_OFF);
+                printf("Long press -> LED off\n");
+                break;
+            }
+            vTaskDelay(pdMS_TO_TICKS(20));
+        }
+    }
 }
