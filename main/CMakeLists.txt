@@ -9,6 +9,8 @@ idf_component_register(SRCS "helloworld.c"
                             "../packages/pheripheral/gpio/src/Gpio.c"
                             "../packages/devices/button/src/btn.c"
                             "../packages/services/src/platform.c"
+                            "../packages/services/src/svc_button.c"
+                            "../packages/services/src/svc_led.c"
                             
 
                             
@@ -21,6 +23,7 @@ idf_component_register(SRCS "helloworld.c"
                                 "../packages/pheripheral/gpio/inc"
                                 "../packages/devices/button/inc"
                                 "../packages/services/inc"
+                                
                                 
 
                     REQUIRES
