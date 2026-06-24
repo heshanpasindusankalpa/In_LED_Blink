@@ -4,7 +4,10 @@ idf_component_register(SRCS "helloworld.c"
                             "../packages/boards/my_board/src/led_config.c"
                             "../packages/boards/my_board/src/pin_config.c"
                             "../packages/boards/my_board/src/i2c_config.c"
+                            "../packages/boards/my_board/src/uart_config.c"
                             "../packages/boards/my_board/src/bq27427_config.c"
+                            "../packages/boards/my_board/src/YS-S201_config.c"
+                            "../packages/devices/YF-S201/src/YS-S201.c"
                             "../packages/devices/bq27427/src/bq27427.c"
                             "../packages/pheripheral/gpio/src/Gpio.c"
                             "../packages/devices/led/src/led.c"
@@ -16,6 +19,9 @@ idf_component_register(SRCS "helloworld.c"
                             "../packages/services/src/svc_button.c"
                             "../packages/services/src/svc_led.c"
                             "../packages/pheripheral/i2c/src/I2c.c"
+                            "../packages/pheripheral/uart/src/uart.c"
+                            "../packages/boards/esp/src/uart_port.c"
+                            "../packages/protocol/sweat_proto/src/uart_proto.c"
                             
 
                             
@@ -23,14 +29,15 @@ idf_component_register(SRCS "helloworld.c"
                                 "../packages/boards/my_board/inc"
                                 "../packages/devices/led/inc"
                                 "../packages/devices/bq27427/inc"
-                                "../packages/boards/my_board/include"
+                                "../packages/devices/YF-S201/inc"
                                 "../packages/boards/esp/inc"
                                 "../packages/pheripheral/gpio/inc"
                                 "../packages/devices/button/inc"
                                 "../packages/devices/lmp91000/inc"
                                 "../packages/services/inc"
                                 "../packages/pheripheral/i2c/inc"
-                                
+                                "../packages/pheripheral/uart/inc"
+                                "../packages/protocol/sweat_proto/inc"
                                 
 
                     REQUIRES

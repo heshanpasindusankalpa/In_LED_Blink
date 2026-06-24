@@ -9,6 +9,7 @@ typedef enum {
   GPIO_2=2,
   GPIO_3=3,
   GPIO_4=4,
+  GPIO_9=9,
   GPIO_CFG_COUNT
 } gpio_index_t;
 

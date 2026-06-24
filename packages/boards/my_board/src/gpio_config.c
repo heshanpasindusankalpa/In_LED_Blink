@@ -33,6 +33,12 @@ const gpio_cfg_t g_gpio_cfg[GPIO_CFG_COUNT] = {
         .intr_type = GPIO_INTR_POSEDGE,
         .pull = GPIO_PULLUP_ONLY,
     },
+    [GPIO_9] = {
+        .pin_num = PIN_9,
+        .direction = GPIO_MODE_INPUT,
+        .intr_type = GPIO_INTR_NEGEDGE,
+        .pull = GPIO_PULLUP_ONLY,
+    },
 };
 
 

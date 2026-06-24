@@ -1,67 +1,46 @@
-// #include <stdio.h>
-// #include "driver/gpio.h"
-// #include "freertos/FreeRTOS.h"
-// #include "freertos/task.h"
-// #include "led.h"
-// #include "btn.h"
-// #include "platform.h"
-// #include "svc_button.h"
-// #include "svc_led.h"
-// #include "freertos/queue.h"
-
-// /* Application-wide button event queue */
-// static QueueHandle_t s_app_btn_queue = NULL;
-
-// /* Button handler logic moved to svc_led service; call via
-//  * `led_handler(s_app_btn_queue)` from main loop. */
-
-// void app_main(void)
-// {
-//     platform_init();
-
-//     /* Initialize button service/context and queue (ISR -> queue) */
-//     svc_button_init();
-
-//     s_app_btn_queue = xQueueCreate(10, sizeof(uint32_t));
-//     if (s_app_btn_queue == NULL) {
-//         printf("Failed to create button queue\n");
-//         return;
-//     }
-//     btn_set_event_queue(s_app_btn_queue);
-
-//     /* Initialize button hardware */
-//     btn_init(BTN_1);
-
-//     /* Start LED service */
-//     svc_led_start();
-
-//     /* Previously a separate task; now call processing function from main loop */
-//     for (;;) {
-//         led_handler(s_app_btn_queue);
-//         vTaskDelay(pdMS_TO_TICKS(20));
-//     }
-// }
-
-
 #include <stdio.h>
-#include "driver/gpio.h"
+#include <inttypes.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "platform.h"
-#include "freertos/queue.h"
-#include "bq27427.h"
-
+#include "YS-S201.h"
 
 void app_main(void)
 {
 	platform_init();
 
-	/* Initialize battery monitor (index 0) */
-	bq27427_init(0);
+	/* Initialize YS-S201 flow sensor using board mapping */
+	ys_init(g_ys_cfg[0].pin_id);
+
+	/* === Calibration: set your measured pulses-per-liter here ===
+	 * If you already know your sensor's PPL (pulses per liter), set
+	 * USER_PPL_VALUE to that value (e.g. 470.0f). If left 0.0f, the
+	 * program will perform a one-time 4-second measurement that you
+	 * should use while pouring exactly 1.0 L (aim for ~4 seconds).
+	 * The measured pulses will be applied as the calibration constant.
+	 */
+#define USER_PPL_VALUE 260.0f
+
+	if (USER_PPL_VALUE > 0.0f) {
+		ys_set_pulses_per_liter(USER_PPL_VALUE);
+		printf("YS-S201: using hardcoded calibration PPL=%.2f pulses/L\n", ys_get_pulses_per_liter());
+	} else {
+		printf("YS-S201: no hardcoded PPL set. Performing one-time 4s measure for 1L calibration\n");
+		printf("Prepare to pour 1.0 L through the sensor in ~4 seconds. Starting soon...\n");
+		vTaskDelay(pdMS_TO_TICKS(2000)); /* small delay to let user prepare */
+		uint32_t pulses = ys_measure_pulses_for_1l_4s();
+		float ppl = ys_compute_ppl_for_one_liter(pulses);
+		printf("Calibration: measured %" PRIu32 " pulses over 4s -> PPL=%.2f pulses/L\n", pulses, ppl);
+		ys_set_pulses_per_liter(ppl);
+		printf("Applied calibration PPL=%.2f\n", ys_get_pulses_per_liter());
+	}
 
 	for (;;) {
-		uint16_t voltage = bq27427_read_word(0, BQ27427_REG_VOLTAGE);
-		printf("Battery voltage: %u mV\n", (unsigned)voltage);
+		/* Sample for 1 second and report L/min */
+		float lpm = ys_measure_lpm(1000);
+		printf("YS-S201 flow: %.2f L/min\n", lpm);
 		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
+
+
