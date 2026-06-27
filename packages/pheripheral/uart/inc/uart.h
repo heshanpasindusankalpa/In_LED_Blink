@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include "uart_config.h"
-#include "uart_proto.h"
+#include "../../../protocol/uart_proto/inc/uart_proto.h"
 
 /**
  * @brief Initialize a UART peripheral instance mapped to a logical id.

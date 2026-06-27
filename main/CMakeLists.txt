@@ -21,7 +21,10 @@ idf_component_register(SRCS "helloworld.c"
                             "../packages/pheripheral/i2c/src/I2c.c"
                             "../packages/pheripheral/uart/src/uart.c"
                             "../packages/boards/esp/src/uart_port.c"
-                            "../packages/protocol/sweat_proto/src/uart_proto.c"
+                            "../packages/protocol/uart_proto/src/uart_proto.c"
+                            "../packages/protocol/uart_proto/src/uart_proto_demo.c"
+                            "../packages/services/src/svc_uart_tx.c"
+                        
                             
 
                             
@@ -37,7 +40,7 @@ idf_component_register(SRCS "helloworld.c"
                                 "../packages/services/inc"
                                 "../packages/pheripheral/i2c/inc"
                                 "../packages/pheripheral/uart/inc"
-                                "../packages/protocol/sweat_proto/inc"
+                                "../packages/protocol/uart_proto/inc"
                                 
 
                     REQUIRES
